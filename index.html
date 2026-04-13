@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Generador de Presupuesto — Cinteia Tools</title>
+<meta name="description" content="Creá presupuestos profesionales en segundos. Gratis, sin registro, listo para enviar.">
+
+<meta property="og:title" content="Generador de Presupuesto | Cinteia Tools">
+<meta property="og:description" content="Presupuestos profesionales listos para enviar en segundos.">
+<meta property="og:image" content="https://cinteia.com/assets/img/webcinteia.jpg">
+<meta property="og:url" content="https://cinteia.com/tools/quote-generator/">
+<meta property="og:type" content="website">
+
+<link rel="icon" href="/assets/img/faviconc.ico">
+<link rel="apple-touch-icon" href="/tools/assets/img/icon-192.png">
+<link rel="canonical" href="https://cinteia.com/tools/quote-generator/">
+<link rel="manifest" href="/tools/manifest.json">
+<meta name="theme-color" content="#080808">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="../assets/css/main.css">
+
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .wrapper { width: 100%; max-width: 600px; }
+
+  .topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .tool-header { margin-bottom: 32px; }
+  .tool-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .tool-header h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+  .tool-header p { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+  /* SECTION HEADER */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  @media (max-width: 480px) {
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ITEMS LIST */
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .item-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    animation: fadeUp 0.25s ease both;
+  }
+
+  .item-row input[type="text"] { min-width: 0; }
+  .item-row input[type="number"] { width: 110px; }
+
+  .remove-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted2);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+    flex-shrink: 0;
+  }
+  .remove-btn:hover { border-color: rgba(239,68,68,0.4); color: #ef4444; }
+
+  .add-item-btn {
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    width: 100%;
+    transition: all var(--transition);
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .add-item-btn:hover { border-color: var(--border-h); color: var(--text); }
+
+  /* OPTIONS ROW */
+  .options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .options-row .field { flex: 1; min-width: 120px; margin-bottom: 0; }
+
+  /* TOGGLE */
+  .toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 10px 0;
+    user-select: none;
+  }
+  .toggle-label input[type="checkbox"] { display: none; }
+  .toggle-track {
+    width: 36px;
+    height: 20px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--border);
+    position: relative;
+    transition: all var(--transition);
+    flex-shrink: 0;
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--muted2);
+    top: 2px;
+    left: 2px;
+    transition: all var(--transition);
+  }
+  input[type="checkbox"]:checked + .toggle-track {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.3);
+  }
+  input[type="checkbox"]:checked + .toggle-track::after {
+    background: white;
+    left: 18px;
+  }
+
+  /* ===== PREVIEW MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px 40px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  .modal-box {
+    width: 100%;
+    max-width: 620px;
+    background: #0e0e0e;
+    border: 1px solid var(--border-h);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    animation: fadeUp 0.3s ease both;
+    margin: auto;
+  }
+
+  .modal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-topbar span {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .modal-actions { display: flex; gap: 8px; }
+
+  /* ===== QUOTE DOC ===== */
+  #quote-doc {
+    padding: 40px 36px;
+    font-family: 'DM Sans', sans-serif;
+    color: #f0f0f0;
+    background: #0e0e0e;
+  }
+
+  .quote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .quote-from-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+  }
+  .quote-from-sub { font-size: 0.78rem; color: var(--muted); }
+
+  .quote-meta-block { text-align: right; }
+  .quote-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .quote-num span {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0;
+  }
+  .quote-date { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+  .quote-valid { font-size: 0.72rem; color: var(--muted2); margin-top: 2px; }
+
+  .quote-divider { height: 1px; background: var(--border); margin: 0 0 28px; }
+
+  .quote-to-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .quote-to-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .quote-to-company { font-size: 0.82rem; color: var(--muted); }
+
+  /* TABLE */
+  .quote-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 28px 0 0;
+  }
+  .quote-table th {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    padding: 0 0 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .quote-table th:last-child,
+  .quote-table td:last-child { text-align: right; }
+  .quote-table th:first-child,
+  .quote-table td:first-child { text-align: left; }
+  .quote-table th:nth-child(2),
+  .quote-table td:nth-child(2) { text-align: center; }
+
+  .quote-table td {
+    padding: 12px 0;
+    font-size: 0.88rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .quote-table td.item-desc { color: var(--muted); font-size: 0.75rem; padding-top: 2px; }
+
+  .quote-totals {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .total-row {
+    display: flex;
+    gap: 32px;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .total-row span:last-child { min-width: 90px; text-align: right; color: var(--text); }
+  .total-row.final {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .total-row.final span:last-child { color: white; }
+
+  .quote-footer-note {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted2);
+    line-height: 1.6;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .quote-powered {
+    font-size: 0.68rem;
+    color: var(--muted2);
+    opacity: 0.5;
+    text-align: right;
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body { background: white !important; padding: 0 !important; }
+    .topnav, .tool-header, .card, .cta-strip, .back-link-wrap,
+    .modal-topbar, .modal-overlay { display: none !important; }
+    .modal-overlay { display: block !important; padding: 0 !important; background: white !important; }
+    .modal-box { border: none !important; border-radius: 0 !important; max-width: 100% !important; }
+    #quote-doc { background: white !important; color: black !important; padding: 24px !important; }
+    #quote-doc * { color: black !important; border-color: #ddd !important; }
+    .quote-powered { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- TOP NAV -->
+  <div class="topnav">
+    <a href="../" class="back-link">
+      <i class="fas fa-arrow-left" style="font-size:0.75rem;"></i> Herramientas
+    </a>
+    <a href="https://github.com/soykevinancheta/cinteia-quote-generator" target="_blank" rel="noopener"
+      class="btn btn-ghost btn-icon" style="width:36px;height:36px;font-size:0.9rem;" title="Ver código">
+      <i class="fab fa-github"></i>
+    </a>
+  </div>
+
+  <!-- HEADER -->
+  <div class="tool-header">
+    <div class="tool-badge"><i class="fas fa-file-invoice-dollar"></i> Generador</div>
+    <h1>Generador de Presupuesto</h1>
+    <p>Completá los datos, agregá los ítems y tenés un presupuesto profesional listo para enviar.</p>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card">
+
+    <!-- DATOS DEL EMISOR -->
+    <div class="section-title">Tu información</div>
+    <div class="two-col" style="margin-bottom:14px;">
+      <div class="field" style="margin-bottom:0;">
+        <label for="from-name">Tu nombre / empresa</label>
+        <input id="from-name" type="text" placeholder="Ej: Kevin Ancheta · Cinteia">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="from-email">Email o contacto</label>
+        <input id="from-email" type="text" placeholder="hola@cinteia.com">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- DATOS DEL CLIENTE -->
+    <div class="section-title" style="margin-top:4px;">Cliente</div>
+    <div class="two-col" style="margin-bottom:4px;">
+      <div class="field" style="margin-bottom:0;">
+        <label for="client-name">Nombre del cliente</label>
+        <input id="client-name" type="text" placeholder="Ej: María García">
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="client-company">Empresa (opcional)</label>
+        <input id="client-company" type="text" placeholder="Ej: Tienda Moda">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ÍTEMS -->
+    <div class="section-title" style="margin-top:4px;">Servicios / productos</div>
+
+    <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;margin-bottom:8px;padding:0 2px;">
+      <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted2);">Descripción</span>
+      <span style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted2);width:110px;text-align:right;">Precio</span>
+      <span style="width:36px;"></span>
+    </div>
+
+    <div class="items-list" id="items-list"></div>
+
+    <button class="add-item-btn" onclick="addItem()">
+      <i class="fas fa-plus" style="font-size:0.75rem;"></i> Agregar ítem
+    </button>
+
+    <div class="divider"></div>
+
+    <!-- OPCIONES -->
+    <div class="section-title" style="margin-top:4px;">Opciones</div>
+    <div class="options-row" style="margin-bottom:16px;">
+      <div class="field">
+        <label for="currency">Moneda</label>
+        <select id="currency">
+          <option value="USD">🇺🇸 USD — Dólar</option>
+          <option value="EUR">🇪🇺 EUR — Euro</option>
+          <option value="ARS">🇦🇷 ARS — Peso argentino</option>
+          <option value="UYU" selected>🇺🇾 UYU — Peso uruguayo</option>
+          <option value="CLP">🇨🇱 CLP — Peso chileno</option>
+          <option value="COP">🇨🇴 COP — Peso colombiano</option>
+          <option value="MXN">🇲🇽 MXN — Peso mexicano</option>
+          <option value="BRL">🇧🇷 BRL — Real</option>
+          <option value="GBP">🇬🇧 GBP — Libra</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="discount">Descuento (%)</label>
+        <input id="discount" type="number" min="0" max="100" placeholder="0" value="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="valid-days">Válido (días)</label>
+        <input id="valid-days" type="number" min="1" placeholder="15" value="15" inputmode="numeric">
+      </div>
+    </div>
+
+    <label class="toggle-label">
+      <input type="checkbox" id="include-tax" onchange="toggleTax()">
+      <span class="toggle-track"></span>
+      Incluir impuesto / IVA
+    </label>
+    <div id="tax-row" style="display:none; margin-top:12px;">
+      <div class="field" style="max-width:180px; margin-bottom:0;">
+        <label for="tax-pct">% Impuesto</label>
+        <input id="tax-pct" type="number" min="0" max="100" placeholder="22" value="22" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- NOTA OPCIONAL -->
+    <div class="section-title" style="margin-top:4px;">Nota (opcional)</div>
+    <div class="field" style="margin-bottom:0;">
+      <textarea id="note" rows="2" placeholder="Ej: Incluye 2 revisiones. Entrega en 7 días hábiles."
+        style="resize:vertical; min-height:60px;"></textarea>
+    </div>
+
+    <div style="margin-top:24px;">
+      <button class="btn btn-primary" onclick="generateQuote()">
+        <i class="fas fa-eye" style="font-size:0.8rem;"></i> Ver presupuesto
+      </button>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- CTA -->
+  <div class="cta-strip" style="margin-top:20px;">
+    <span>¿Necesitás ayuda para vender mejor?</span>
+    <a href="https://cinteia.com" target="_blank" rel="noopener">Hablemos →</a>
+  </div>
+
+  <div class="back-link-wrap" style="text-align:center; margin-top:32px;">
+    <a href="../" class="back-link" style="font-size:0.78rem;">
+      <i class="fas fa-th"></i> Ver todas las herramientas
+    </a>
+  </div>
+
+</div><!-- /wrapper -->
+
+<!-- MODAL PREVIEW -->
+<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-topbar">
+      <span>Vista previa del presupuesto</span>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.78rem;" onclick="copyQuoteText()">
+          <i class="fas fa-copy" style="font-size:0.75rem;"></i> Copiar texto
+        </button>
+        <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.78rem;" onclick="printQuote()">
+          <i class="fas fa-print" style="font-size:0.75rem;"></i> Imprimir / PDF
+        </button>
+        <button class="btn btn-ghost btn-icon" style="width:34px;height:34px;font-size:0.85rem;" onclick="closeModal()" title="Cerrar">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- QUOTE DOCUMENT -->
+    <div id="quote-doc"></div>
+  </div>
+</div>
+
+<script src="../assets/js/main.js"></script>
+<script>
+// ---- STATE ----
+let itemCount = 0;
+
+// ---- INIT ----
+addItem(); // arrancar con 1 ítem
+
+function addItem() {
+  itemCount++;
+  const id = itemCount;
+  const list = document.getElementById('items-list');
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.id = 'item-' + id;
+  row.innerHTML = `
+    <input type="text" placeholder="Descripción del servicio" class="item-desc-input">
+    <input type="number" min="0" placeholder="0.00" class="item-price-input" style="width:110px;" inputmode="decimal">
+    <button class="remove-btn" onclick="removeItem(${id})" title="Eliminar">
+      <i class="fas fa-times"></i>
+    </button>
+  `;
+  list.appendChild(row);
+}
+
+function removeItem(id) {
+  const el = document.getElementById('item-' + id);
+  if (document.querySelectorAll('.item-row').length <= 1) return; // mínimo 1
+  el.style.opacity = '0';
+  el.style.transform = 'translateX(-8px)';
+  el.style.transition = 'all 0.2s ease';
+  setTimeout(() => el.remove(), 200);
+}
+
+function toggleTax() {
+  const checked = document.getElementById('include-tax').checked;
+  document.getElementById('tax-row').style.display = checked ? 'block' : 'none';
+}
+
+// ---- CURRENCIES ----
+const CURRENCIES = {
+  USD: { symbol: '$',    locale: 'en-US' },
+  EUR: { symbol: '€',    locale: 'de-DE' },
+  ARS: { symbol: '$',    locale: 'es-AR' },
+  UYU: { symbol: '$U',   locale: 'es-UY' },
+  CLP: { symbol: '$',    locale: 'es-CL' },
+  COP: { symbol: '$',    locale: 'es-CO' },
+  MXN: { symbol: '$',    locale: 'es-MX' },
+  BRL: { symbol: 'R$',   locale: 'pt-BR' },
+  GBP: { symbol: '£',    locale: 'en-GB' },
+};
+
+function formatMoney(amount, currency) {
+  const c = CURRENCIES[currency] || CURRENCIES['USD'];
+  try {
+    return new Intl.NumberFormat(c.locale, {
+      style: 'currency', currency, minimumFractionDigits: 2, maximumFractionDigits: 2
+    }).format(amount);
+  } catch {
+    return c.symbol + amount.toFixed(2);
+  }
+}
+
+// ---- GENERATE ----
+function generateQuote() {
+  const fromName    = document.getElementById('from-name').value.trim()    || 'Tu Nombre';
+  const fromEmail   = document.getElementById('from-email').value.trim()   || '';
+  const clientName  = document.getElementById('client-name').value.trim()  || 'Cliente';
+  const clientCo    = document.getElementById('client-company').value.trim();
+  const currency    = document.getElementById('currency').value;
+  const discountPct = parseFloat(document.getElementById('discount').value) || 0;
+  const validDays   = parseInt(document.getElementById('valid-days').value) || 15;
+  const includeTax  = document.getElementById('include-tax').checked;
+  const taxPct      = includeTax ? (parseFloat(document.getElementById('tax-pct').value) || 0) : 0;
+  const note        = document.getElementById('note').value.trim();
+
+  // Collect items
+  const rows = document.querySelectorAll('.item-row');
+  const items = [];
+  rows.forEach(row => {
+    const desc  = row.querySelector('.item-desc-input').value.trim();
+    const price = parseFloat(row.querySelector('.item-price-input').value) || 0;
+    if (desc || price) items.push({ desc: desc || '—', price });
+  });
+
+  if (items.length === 0) {
+    alert('Agregá al menos un ítem con descripción o precio.');
+    return;
+  }
+
+  // Calc
+  const subtotal    = items.reduce((a, i) => a + i.price, 0);
+  const discountAmt = subtotal * (discountPct / 100);
+  const afterDisc   = subtotal - discountAmt;
+  const taxAmt      = afterDisc * (taxPct / 100);
+  const total       = afterDisc + taxAmt;
+
+  // Quote number & date
+  const now       = new Date();
+  const quoteNum  = 'Q-' + now.getFullYear() + String(now.getMonth()+1).padStart(2,'0') + String(now.getDate()).padStart(2,'0') + '-' + String(Math.floor(Math.random()*900)+100);
+  const dateStr   = now.toLocaleDateString('es', { day: '2-digit', month: 'long', year: 'numeric' });
+  const validDate = new Date(now.getTime() + validDays * 86400000)
+    .toLocaleDateString('es', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  // Build items rows
+  const itemsHTML = items.map(item => `
+    <tr>
+      <td>${escHtml(item.desc)}</td>
+      <td style="text-align:center;">1</td>
+      <td style="text-align:right;">${formatMoney(item.price, currency)}</td>
+    </tr>
+  `).join('');
+
+  // Totals
+  let totalsHTML = `
+    <div class="total-row"><span>Subtotal</span><span>${formatMoney(subtotal, currency)}</span></div>
+  `;
+  if (discountPct > 0) {
+    totalsHTML += `<div class="total-row"><span>Descuento (${discountPct}%)</span><span>− ${formatMoney(discountAmt, currency)}</span></div>`;
+  }
+  if (includeTax && taxPct > 0) {
+    totalsHTML += `<div class="total-row"><span>Impuesto / IVA (${taxPct}%)</span><span>${formatMoney(taxAmt, currency)}</span></div>`;
+  }
+  totalsHTML += `<div class="total-row final"><span>Total</span><span>${formatMoney(total, currency)}</span></div>`;
+
+  const noteHTML = note
+    ? `<div style="margin-top:20px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;font-size:0.8rem;color:var(--muted);line-height:1.6;"><strong style="color:var(--text);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.08em;">Nota</strong><br><br>${escHtml(note)}</div>`
+    : '';
+
+  document.getElementById('quote-doc').innerHTML = `
+    <div class="quote-header">
+      <div>
+        <div class="quote-from-name">${escHtml(fromName)}</div>
+        ${fromEmail ? `<div class="quote-from-sub">${escHtml(fromEmail)}</div>` : ''}
+      </div>
+      <div class="quote-meta-block">
+        <div class="quote-num">Presupuesto <span>#${quoteNum}</span></div>
+        <div class="quote-date">${dateStr}</div>
+        <div class="quote-valid">Válido hasta ${validDate}</div>
+      </div>
+    </div>
+
+    <div class="quote-divider"></div>
+
+    <div>
+      <div class="quote-to-label">Para</div>
+      <div class="quote-to-name">${escHtml(clientName)}</div>
+      ${clientCo ? `<div class="quote-to-company">${escHtml(clientCo)}</div>` : ''}
+    </div>
+
+    <table class="quote-table">
+      <thead>
+        <tr>
+          <th style="width:60%;">Descripción</th>
+          <th style="width:15%;text-align:center;">Cant.</th>
+          <th style="width:25%;text-align:right;">Precio</th>
+        </tr>
+      </thead>
+      <tbody>${itemsHTML}</tbody>
+    </table>
+
+    <div class="quote-totals">${totalsHTML}</div>
+
+    ${noteHTML}
+
+    <div class="quote-footer-note">
+      <span>Gracias por tu confianza.</span>
+      <span class="quote-powered">Generado con Cinteia Tools · cinteia.com/tools</span>
+    </div>
+  `;
+
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+function printQuote() {
+  window.print();
+}
+
+function copyQuoteText() {
+  const items = document.querySelectorAll('.item-row');
+  const currency = document.getElementById('currency').value;
+  const fromName = document.getElementById('from-name').value.trim() || 'Tu Nombre';
+  const clientName = document.getElementById('client-name').value.trim() || 'Cliente';
+
+  let lines = [
+    `PRESUPUESTO — ${fromName}`,
+    `Para: ${clientName}`,
+    `Fecha: ${new Date().toLocaleDateString('es')}`,
+    '',
+    '--- DETALLE ---',
+  ];
+
+  let subtotal = 0;
+  items.forEach(row => {
+    const desc  = row.querySelector('.item-desc-input').value.trim();
+    const price = parseFloat(row.querySelector('.item-price-input').value) || 0;
+    if (desc || price) {
+      lines.push(`• ${desc || '—'}  ${formatMoney(price, currency)}`);
+      subtotal += price;
+    }
+  });
+
+  const disc    = parseFloat(document.getElementById('discount').value) || 0;
+  const inclTax = document.getElementById('include-tax').checked;
+  const taxPct  = inclTax ? (parseFloat(document.getElementById('tax-pct').value) || 0) : 0;
+  const discAmt = subtotal * disc / 100;
+  const afterD  = subtotal - discAmt;
+  const taxAmt  = afterD * taxPct / 100;
+  const total   = afterD + taxAmt;
+
+  lines.push('', `Subtotal: ${formatMoney(subtotal, currency)}`);
+  if (disc > 0) lines.push(`Descuento (${disc}%): -${formatMoney(discAmt, currency)}`);
+  if (inclTax && taxPct > 0) lines.push(`IVA (${taxPct}%): ${formatMoney(taxAmt, currency)}`);
+  lines.push(`TOTAL: ${formatMoney(total, currency)}`);
+
+  const note = document.getElementById('note').value.trim();
+  if (note) lines.push('', `Nota: ${note}`);
+
+  lines.push('', '— Generado con Cinteia Tools · cinteia.com/tools');
+
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.querySelector('.modal-actions .btn-ghost');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check" style="font-size:0.75rem;"></i> ¡Copiado!';
+    btn.style.color = '#22c55e';
+    setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; }, 2000);
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Cerrar con Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+
+</body>
+</html>
